@@ -1,0 +1,38 @@
+# defining a "hello-world" webserver
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webserver-deployment
+spec:
+  selector:
+    matchLabels:
+      app: webserver
+  replicas: 2   # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: webserver
+    spec:
+      containers:
+      - name: angular
+        image: majarianil/hello-world
+        ports:
+        - containerPort: 80
+
+---
+# defining a service
+kind: Service
+apiVersion: v1
+metadata:
+  name: webserver-service
+  annotations:
+    service.beta.kubernetes.io/do-loadbalancer-algorithm: "round_robin"
+spec:
+  selector:
+    app: webserver
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+    nodePort: 30000
